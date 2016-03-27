@@ -1,0 +1,20 @@
+#!/bin/bash
+
+# Prevent running assemble in builders different than official STI image.
+# The official elixir:1.2.0-onbuild already run mix deps.get and use different
+# application folder.
+[ -d "/usr/src/app" ] && exit 0
+
+set -e
+
+echo "---> Installing application source"
+cp -Rf /tmp/src/. ./
+
+echo "---> Installing application dependencies"
+mix deps.get
+
+echo "---> Compiling your Elixir application"
+mix compile
+
+# Fix source directory permissions
+fix-permissions ./
